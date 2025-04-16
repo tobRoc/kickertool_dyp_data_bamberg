@@ -249,5 +249,5 @@ data = {
     "yearData": year_data
 }
 
-with open('rangliste.json', 'w') as json_file:
+with open('ranglisteJosie.json', 'w') as json_file:
     json.dump(data, json_file, ensure_ascii=False, indent=4)
