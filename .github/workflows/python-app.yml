@@ -36,14 +36,17 @@ jobs:
       run: |
         python downloadRes.py
         python rangliste.py
+        python ranglisteJosie.py
         python eloRangliste.py
         ls -lax
         mkdir _site
         cp index.html _site/
         cp rangliste.html _site/
+        cp ranglisteJosie.html _site/
         cp eloRanglistePlayerGUI.html _site/
         cp eloRanglisteOverall.html _site/
         cp rangliste.json _site/
+        cp ranglisteJosie.json _site/
         cp eloRangliste.json _site/
         cp eloRanglisteDetailed.json _site/
         ls
