@@ -31,13 +31,19 @@ teilnahmen_data = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 turnier_details = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 year_data = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 
+def getPoints(platzierung, teilnehmerzahl):
+    if teilnehmerzahl/2 > platzierung:
+        return teilnehmerzahl - (2 * (platzierung - 1))
+    else:
+        return teilnehmerzahl - platzierung + 1
+
 # Funktion zur Verarbeitung von Endergebnissen
 def process_end_results(end_results, discipline, year):
     teilnehmerzahl = len(end_results)
     for platzierung, player in enumerate(end_results, start=1):
         name = player['name']
         if platzierung > 0:
-            platzierung_data[name][discipline][year] += (teilnehmerzahl - 2 * (platzierung - 1))
+            platzierung_data[name][discipline][year] += getPoints(platzierung, teilnehmerzahl )
             teilnahmen_data[name][discipline][year] += 1
             turnier_details[name][discipline][year].append((platzierung, teilnehmerzahl))
 
@@ -51,7 +57,7 @@ def process_eliminations(eliminations, discipline, year, total_players):
                     place = standing['stats']['place']
                     name = standing['name']
                     if place > 0:
-                        platzierung_data[name][discipline][year] += (total_players - 2 * (place - 1))
+                        platzierung_data[name][discipline][year] += getPoints(place, total_players)
                         teilnahmen_data[name][discipline][year] += 1
                         turnier_details[name][discipline][year].append((place, total_players))
                 
@@ -65,7 +71,7 @@ def process_qualifying(qualifying, discipline, year, elimination_count):
             name = standing['name']
             if name not in platzierung_data or year not in platzierung_data[name][discipline]:
                 if rankEli > 0:
-                    platzierung_data[name][discipline][year] += (total_players  - 2 * (rankEli - 1))
+                    platzierung_data[name][discipline][year] += total_players  - rankEli + 1
                     teilnahmen_data[name][discipline][year] += 1
                     turnier_details[name][discipline][year].append((rankEli, total_players))
                     rankEli += 1
