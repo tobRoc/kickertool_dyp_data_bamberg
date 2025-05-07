@@ -69,12 +69,11 @@ def process_qualifying(qualifying, discipline, year, elimination_count):
         total_players = len(standings)
         for rank, standing in enumerate(standings, start=1):
             name = standing['name']
-            if name not in platzierung_data or year not in platzierung_data[name][discipline]:
-                if rankEli > 0:
-                    platzierung_data[name][discipline][year] += total_players  - rankEli + 1
-                    teilnahmen_data[name][discipline][year] += 1
-                    turnier_details[name][discipline][year].append((rankEli, total_players))
-                    rankEli += 1
+            if rankEli > 0:
+                platzierung_data[name][discipline][year] += total_players  - rankEli + 1
+                teilnahmen_data[name][discipline][year] += 1
+                turnier_details[name][discipline][year].append((rankEli, total_players))
+                rankEli += 1
 
 # Durchlaufen der Turnierdateien und Aktualisieren der Platzierungsdaten
 for file_name in tournament_files:
