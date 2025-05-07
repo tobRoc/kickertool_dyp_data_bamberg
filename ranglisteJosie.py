@@ -49,6 +49,7 @@ def process_end_results(end_results, discipline, year):
 
 # Funktion zur Verarbeitung von Eliminations
 def process_eliminations(eliminations, discipline, year, total_players):
+    returnNameAlreadyUsed = []
     for elimination in eliminations:
         if 'standings' in elimination:
             standings = elimination['standings']
@@ -60,16 +61,18 @@ def process_eliminations(eliminations, discipline, year, total_players):
                         platzierung_data[name][discipline][year] += getPoints(place, total_players)
                         teilnahmen_data[name][discipline][year] += 1
                         turnier_details[name][discipline][year].append((place, total_players))
+                        returnNameAlreadyUsed.append(name)
+    return returnNameAlreadyUsed
                 
 # Funktion zur Verarbeitung von Qualifying
-def process_qualifying(qualifying, discipline, year, elimination_count):
+def process_qualifying(qualifying, discipline, year, elimination_count, returnNameAlreadyUsed):
     if 'standings' in qualifying:
         standings = qualifying['standings']
         rankEli = elimination_count + 1
         total_players = len(standings)
         for rank, standing in enumerate(standings, start=1):
             name = standing['name']
-            if name not in platzierung_data or year not in platzierung_data[name][discipline]:
+            if name not in returnNameAlreadyUsed:
                 if rankEli > 0:
                     platzierung_data[name][discipline][year] += total_players  - rankEli + 1
                     teilnahmen_data[name][discipline][year] += 1
@@ -86,18 +89,20 @@ for file_name in tournament_files:
     year = parser.parse(tournament_data['createdAt']).year
     year_data[year]=year
     
+    nameAlreadyUsed = []
+    
     elimination_count = 0
     # Verarbeiten der Eliminations
     if 'eliminations' in tournament_data:
         if(len(tournament_data['eliminations']) == 0):
             continue
         else:
-            process_eliminations(tournament_data['eliminations'], discipline, year, len(tournament_data['qualifying'][0]['standings']))
+            nameAlreadyUsed = process_eliminations(tournament_data['eliminations'], discipline, year, len(tournament_data['qualifying'][0]['standings']))
             elimination_count = len(tournament_data['eliminations'][0]['standings'])
     
     # Verarbeiten der Qualifikationsspiele
     if 'qualifying' in tournament_data:
-        process_qualifying(tournament_data['qualifying'][0], discipline, year, elimination_count)
+        process_qualifying(tournament_data['qualifying'][0], discipline, year, elimination_count, nameAlreadyUsed)
 
 # Dynamische Ermittlung der Disziplinen aus den Turnierdateien
 additional_disciplines = defaultdict(set)
